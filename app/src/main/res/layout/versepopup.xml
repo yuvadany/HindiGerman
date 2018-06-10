@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Today's Verse  आज की  वचन # "
+        android:textColor="#fff"/>
+    <TextView
+        android:id="@+id/versetoday"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/heading"
+        android:layout_height="wrap_content"
+        android:text="பூமியிலுள்ளவைகளையல்ல, மேலானவைகளையே நாடுங்கள்.கொலோசெயர் 3:2
+        Set your affection on things above, not on things on the earth. Colossians 3:2"
+        android:textColor="#fff"/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000">
+    <Button
+        android:id="@+id/shareVerse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share"        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:id="@+id/closePopupBtn"/>
+        </LinearLayout>
+</LinearLayout>

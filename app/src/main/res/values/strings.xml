@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">पवित्र बाइबिल -Holy Bible </string>
+    <string name="action_settings">Settings</string>
+    <string name="test">In the beginning</string>
+    <string name="test2">"CHAPTER 1
+    1 In the beginning God created the heaven and the earth. </string>
+    <string-array name="books">
+        <item>उत्पत्ति-Genesis</item>
+        <item>निर्गमन-Exodus</item>
+        <item>लैव्यव्यवस्था-Leviticus</item>
+        <item>गिनती-Numbers</item>
+        <item>व्यवस्थाविवरण-Deuteronomy</item>
+        <item>यहोशू-Joshua</item>
+        <item>न्यायियों-Judges</item>
+        <item>रूत-Ruth</item>
+        <item>1 शमूएल-1 Samuel</item>
+        <item>2 शमूएल-2 Samuel</item>
+        <item>1 राजा-1 Kings</item>
+        <item>2 राजा-2 Kings</item>
+        <item>1 इतिहास-1 Chronicles</item>
+        <item>2 इतिहास-2 Chronicles</item>
+        <item>एज्रा-Ezra</item>
+        <item>नहेमायाह-Nehemiah</item>
+        <item>एस्तेर-Esther</item>
+        <item>अय्यूब-Job</item>
+        <item>भजन संहिता-Psalms</item>
+        <item>नीतिवचन-Proverbs</item>
+        <item>सभोपदेशक-Ecclesiastes</item>
+        <item>श्रेष्ठगीत-Song of Songs</item>
+        <item>यशायाह-Isaiah</item>
+        <item>यिर्मयाह-Jeremiah</item>
+        <item>विलापगीत-Lamentations</item>
+        <item>यहेजकेल-Ezekiel</item>
+        <item>दानिय्येल-Daniel</item>
+        <item>होशे-Hosea</item>
+        <item>योएल-Joel</item>
+        <item>आमोस-Amos</item>
+        <item>ओबद्दाह-Obadiah</item>
+        <item>योना-Jonah</item>
+        <item>मीका-Micah</item>
+        <item>नहूम-Nahum</item>
+        <item>हबक्कूक-Habakkuk</item>
+        <item>सपन्याह-Zephaniah</item>
+        <item>हाग्गै-Haggai</item>
+        <item>जकर्याह-Zechariah</item>
+        <item>मलाकी-Malachi</item>
+        <item>मत्ती-Matthew</item>
+        <item>मरकुस-Mark</item>
+        <item>लूका-Luke</item>
+        <item>यूहन्ना-John</item>
+        <item>प्रेरितों के काम-Acts</item>
+        <item>रोमियो-Romans</item>
+        <item>1 कुरिन्थियों-1 Corinthians</item>
+        <item>2 कुरिन्थियों-2 Corinthians</item>
+        <item>गलातियों-Galatians</item>
+        <item>इफिसियों-Ephesians</item>
+        <item>फिलिप्पियों-Philippians</item>
+        <item>कुलुस्सियों-Colossians</item>
+        <item>1 थिस्सलुनीकियों-1 Thessalonians</item>
+        <item>2 थिस्सलुनीकियों-2 Thessalonians</item>
+        <item>1 तीमुथियुस-1 Timothy</item>
+        <item>2 तीमुथियुस-2 Timothy</item>
+        <item>तीतुस-Titus</item>
+        <item>फिलेमोन-Philemon</item>
+        <item>इब्रानियों-Hebrews</item>
+        <item>याकूब-James</item>
+        <item>1 पतरस-1 Peter</item>
+        <item>2 पतरस-2 Peter</item>
+        <item>1 यूहन्ना-1 John</item>
+        <item>2 यूहन्ना-2 John</item>
+        <item>3 यूहन्ना-3 John</item>
+        <item>यहूदा-Jude</item>
+        <item>प्रकाशित वाक्य-Revelation</item>
+    </string-array>
+    <string-array name="chapters">
+        <item>"1"</item>
+        <item>"2"</item>
+        <item>"3"</item>
+        <item>"4"</item>
+    </string-array>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>
