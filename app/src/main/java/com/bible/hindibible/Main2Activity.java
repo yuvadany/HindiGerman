@@ -65,12 +65,14 @@ public class Main2Activity extends AppCompatActivity
     BooksChapters chapters = new BooksChapters();
     String defaulthint = "Search here";
     ArrayList<String> listitems;
-    Button closePopupBtn,shareverse;
-    PopupWindow popupWindow;
+    Button closePopupBtn,shareVerse,shareVerseOnly,shareEearchResult,closeShareResult;
+    PopupWindow popupWindow,popupWindowSearch;
     DrawerLayout verseLayout;
     TextView todayverse;
     String verseToday;
     DBHelper dbhelper = new DBHelper(this);
+    String searchResult = "test";
+    String verseSelected = "Amen";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class Main2Activity extends AppCompatActivity
         View customView = layoutInflater.inflate(R.layout.versepopup,null);
         verseLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         closePopupBtn = (Button) customView.findViewById(R.id.closePopupBtn);
-        shareverse = (Button) customView.findViewById(R.id.shareVerse);
+        shareVerse = (Button) customView.findViewById(R.id.shareVerse);
         todayverse = (TextView) customView.findViewById(R.id.versetoday);
         popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         // Getting daily verse
@@ -110,7 +112,7 @@ public class Main2Activity extends AppCompatActivity
                 popupWindow.dismiss();
             }
         });
-        shareverse.setOnClickListener(new View.OnClickListener() {
+        shareVerse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String app_url = "https://play.google.com/store/apps/details?id=com.bible.hindibible";
@@ -127,6 +129,9 @@ public class Main2Activity extends AppCompatActivity
             }
         });
         // Popup Verse Ends
+        //share Verse/Search result starts
+
+        //share Verse/Search result ends
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //Screen width set starts Jan 23 -2018 by Yuvaraj Palanisamy
@@ -219,6 +224,7 @@ public class Main2Activity extends AppCompatActivity
                  /*   dbhelper.openDataBase();                   */
                     String[] arrayOfString = searchVerse(paramAnonymousString);
                     localObject = arrayOfString;
+                    searchResult = arrayToString (arrayOfString);
                 } catch (Exception localException) {
                     Log.d("Db Open issue ", localException.getMessage());
                 }
@@ -230,7 +236,60 @@ public class Main2Activity extends AppCompatActivity
                 localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, listitems);
                 localListView = (ListView) Main2Activity.this.findViewById(R.id.searchresult);
                 localListView.setAdapter(localArrayAdapter);
-                // localListView.setOnItemClickListener(Main2Activity.this.myOnItemClickListener);
+               /* localListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Bundle localBundle = new Bundle();
+                    LayoutInflater layoutInflater = (LayoutInflater) Main2Activity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    verseSelected = ((TextView) view).getText().toString();
+                    View customViewShare = layoutInflater.inflate(R.layout.sharesearch,null);
+                    shareEearchResult = (Button) customViewShare.findViewById(R.id.shareSearchResult);
+                    shareVerseOnly = (Button) customViewShare.findViewById(R.id.shareVerseOnly);
+                    closeShareResult = (Button) customViewShare.findViewById(R.id.closeShareResult);
+                    popupWindowSearch = new PopupWindow(customViewShare, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                *//*    shareVerseOnly.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                Intent localIntent2 = new Intent("android.intent.action.SEND");
+                                localIntent2.setType("text/plain");
+                                localIntent2.putExtra("android.intent.extra.SUBJECT", "Share Word वचन  #");
+                                localIntent2.putExtra("android.intent.extra.TEXT", verseSelected);
+                                startActivity(Intent.createChooser(localIntent2, "Selected verse Share"));
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    });
+                    shareEearchResult.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                Intent localIntent2 = new Intent("android.intent.action.SEND");
+                                localIntent2.setType("text/plain");
+                                localIntent2.putExtra("android.intent.extra.SUBJECT", "Share Search वचन  #");
+                                localIntent2.putExtra("android.intent.extra.TEXT", searchResult);
+                                startActivity(Intent.createChooser(localIntent2, "Share search Result"));
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    });
+                    closeShareResult.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            popupWindowSearch.dismiss();
+                        }
+                    });
+                    //Toast.makeText(Main2Activity.this,  searchResult , Toast.LENGTH_SHORT).show() ;
+                    findViewById(R.id.drawer_layout).post(new Runnable() {
+                        public void run() {
+                            popupWindowSearch.showAtLocation(findViewById(R.id.drawer_layout), Gravity.CENTER, 0, 0);
+
+                        }
+                    });*//*
+                }
+            });*/
                 return true;
             }
         });
@@ -551,7 +610,6 @@ public class Main2Activity extends AppCompatActivity
                             sb.append(chapters.getBookName(i) + ":" + j + "\n" + line + "\n");
                         }
                     }
-                    verses = sb.toString();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -593,7 +651,7 @@ public class Main2Activity extends AppCompatActivity
         {  return 40;
         } else if (bookName.equalsIgnoreCase("लैव्यव्यवस्था-Leviticus"))
         {  return 27;
-        } else if(bookName.equalsIgnoreCase("गिनती--Numbers"))
+        } else if(bookName.equalsIgnoreCase("गिनती-Numbers"))
         {   return 36;
         } else if (bookName.equalsIgnoreCase("व्यवस्थाविवरण-Deuteronomy")) {
             return 34;
@@ -862,5 +920,15 @@ public class Main2Activity extends AppCompatActivity
         {  return 66;
         }
         return books;
+    }
+
+    public String arrayToString(String[] array)
+    {
+        StringBuilder builder = new StringBuilder();
+        for(String s : array) {
+            builder.append(s+"\n");
+        }
+        String searchresult = builder.toString();
+        return searchresult;
     }
 }
