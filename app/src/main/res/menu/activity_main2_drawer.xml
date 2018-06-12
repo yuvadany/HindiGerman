@@ -15,6 +15,10 @@
                 android:id="@+id/rate"
                 android:icon="@drawable/ic_menu_send"
                 android:title="Rate the App"  />
+            <item
+                android:id="@+id/praises"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Praises स्तुति "  />
         </menu>
     </item>
 

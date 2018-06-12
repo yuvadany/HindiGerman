@@ -526,7 +526,12 @@ public class Main2Activity extends AppCompatActivity
            Intent intent=new Intent(Intent.ACTION_VIEW);
            intent.setData(Uri.parse("https://play.google.com/store/apps/developer?id=YUVARAJ+PALANISAMY"));
            startActivity(intent);
-       }       else if (id == R.id.nav_share) {
+       }
+       else if (id == R.id.praises) {
+           Intent localIntent = new Intent(Main2Activity.this, PraisesActivity.class);
+           Main2Activity.this.startActivity(localIntent);
+       }
+       else if (id == R.id.nav_share) {
             String app_url = "https://play.google.com/store/apps/details?id=com.bible.hindibible";
             try {
                 Intent localIntent2 = new Intent("android.intent.action.SEND");

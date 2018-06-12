@@ -64,7 +64,6 @@ public class DBHelper
     {
         int day = doy;
         String verse = "Amen";
-        ArrayList<String> localArrayList = new ArrayList();
         Cursor localCursor = getReadableDatabase().rawQuery("SELECT verse  FROM verses where id ="+doy, null);
         while (localCursor.moveToNext()) {
             verse = localCursor.getString(0);
@@ -72,6 +71,16 @@ public class DBHelper
         return  verse;
     }
 
+    public String[] getPraises()
+    {
+        String verse = "Amen";
+        ArrayList<String> praiseArrayList = new ArrayList();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT id,praise,verse  FROM praises", null);
+        while (localCursor.moveToNext()) {
+            praiseArrayList.add(localCursor.getString(0)+". "+localCursor.getString(1) +" ("+localCursor.getString(2)+" )");
+        }
+        return (String[])praiseArrayList.toArray(new String[praiseArrayList.size()]);
+    }
 
     public void onCreate(SQLiteDatabase paramSQLiteDatabase) {}
 
@@ -93,7 +102,6 @@ public class DBHelper
             throw new RuntimeException("Error creating source database", localIOException);
         }
     }
-
 
 
 }
