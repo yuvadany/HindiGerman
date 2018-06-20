@@ -32,7 +32,6 @@
         android:layout_marginRight="8dip"
         android:layout_below="@+id/searchresult"
         android:entries="@array/books" />
-
     <Spinner
         android:id="@+id/chapters_spinner"
         android:layout_width="75dip"
@@ -42,77 +41,54 @@
         android:layout_marginRight="8dip"
         android:layout_below="@+id/searchresult"
         android:entries="@array/chapters" />
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/chapters_spinner"
-        android:fitsSystemWindows="true"
-        android:layout_marginLeft="5dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/chapters_spinner"
             android:layout_toLeftOf="@+id/secondView"
             android:orientation="vertical">
-            <TextView
+            <ListView
                 android:id="@+id/SingleText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18.0sp"
-                android:text="@string/test" />
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
         </LinearLayout>
-    </ScrollView>
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/chapters_spinner"
-        android:fitsSystemWindows="true"
-        android:layout_marginLeft="5dp"
-        android:id="@+id/scrollView1">
+
         <LinearLayout
             android:id="@+id/firstLayout"
             android:layout_width="match_parent"
+            android:layout_below="@+id/chapters_spinner"
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/secondView"
             android:orientation="vertical">
-            <TextView
+            <ListView
+                android:id="@+id/hindi_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/test"
-                android:id="@+id/hindi_text"
-                android:textSize="18.0sp"/>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
         </LinearLayout>
 
-    </ScrollView>
     <View
         android:id="@+id/secondView"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"/>
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="195dp"
-        android:layout_marginRight="5dp"
-        android:fitsSystemWindows="true"
-        android:layout_below="@+id/chapters_spinner"
-        android:id="@+id/scrollView2">
-        <LinearLayout
+       <LinearLayout
+            android:layout_below="@+id/chapters_spinner"
             android:id="@+id/thirdLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toRightOf="@+id/secondView"
             android:orientation="horizontal">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/test2"
+            <ListView
+                android:layout_below="@+id/chapters_spinner"
                 android:id="@+id/english_text"
-                android:textSize="18.0sp"/>
-
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
         </LinearLayout>
-
-    </ScrollView>
-
 
 </RelativeLayout>

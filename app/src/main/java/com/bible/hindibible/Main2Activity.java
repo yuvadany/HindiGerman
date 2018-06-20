@@ -54,7 +54,8 @@ public class Main2Activity extends AppCompatActivity
     public int book_number = 1;
     ScrollView first,second,third;
     public HashMap chaptersMap = new HashMap<String, Integer>();
-    TextView hindi_verses, english_verses, single_text;
+    TextView hindi_verses, english_verses, single_view;
+    ListView englishList, singleList,hindiList;
     Spinner book, chapter;
     String language = "both";
     Bundle bundle = new Bundle();
@@ -137,20 +138,20 @@ public class Main2Activity extends AppCompatActivity
         //Screen width set starts Jan 23 -2018 by Yuvaraj Palanisamy
         int width = getWindowManager().getDefaultDisplay().getWidth();
         //  int height = getWindowManager().getDefaultDisplay().getHeight();
-        first = (ScrollView) findViewById(R.id.scrollView1);
+        /*first = (ScrollView) findViewById(R.id.scrollView1);
         second = (ScrollView) findViewById(R.id.scrollView2);
-        third = (ScrollView) findViewById(R.id.scrollView3);
+        third = (ScrollView) findViewById(R.id.scrollView3);*/
         // Toast.makeText(getApplicationContext(), "Width " + width, Toast.LENGTH_LONG).show();
-        first.getLayoutParams().width = width / 2 - 5;
+        //first.getLayoutParams().width = width / 2 - 5;
         //  second.getLayoutParams().
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) second.getLayoutParams();
+        /*RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) second.getLayoutParams();
         layoutParams.setMargins(width / 2 + 5, 0, 0, 0);
-        second.setLayoutParams(layoutParams);
+        second.setLayoutParams(layoutParams);*/
         //Screen width set starts Jan 23 -2018 by Yuvaraj Palanisamy Ends
-        single_text = ((TextView) findViewById(R.id.SingleText));
-        single_text.setVisibility(View.GONE);
-        hindi_verses = ((TextView) findViewById(R.id.hindi_text));
-        english_verses = ((TextView) findViewById(R.id.english_text));
+        singleList = ((ListView) findViewById(R.id.SingleText));
+        singleList.setVisibility(View.GONE);
+        hindiList = ((ListView) findViewById(R.id.hindi_text));
+        englishList = ((ListView) findViewById(R.id.english_text));
         book = (Spinner) findViewById(R.id.books_spinner);
         chapter = (Spinner) findViewById(R.id.chapters_spinner);
         /*// Chapter spinner starting point
@@ -160,7 +161,7 @@ public class Main2Activity extends AppCompatActivity
         //*/
         book.setOnItemSelectedListener(this);
         chapter.setOnItemSelectedListener(this);
-        englishview = (ScrollView) findViewById(R.id.scrollView2);
+       // englishview = (ScrollView) findViewById(R.id.scrollView2);
         fabShare = (FloatingActionButton) findViewById(R.id.share);
         fabShare.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,9 +300,9 @@ public class Main2Activity extends AppCompatActivity
     public void onItemSelected(AdapterView<?> parent, View arg1, int arg2, long arg3) { /* TODO Auto-generated method stub*/
         String sp1 = String.valueOf(book.getSelectedItem());
         String sp2 = String.valueOf(chapter.getSelectedItem());
-        first.fullScroll(ScrollView.FOCUS_UP);
+        /*first.fullScroll(ScrollView.FOCUS_UP);
         second.fullScroll(ScrollView.FOCUS_UP);
-        third.fullScroll(ScrollView.FOCUS_UP);
+        third.fullScroll(ScrollView.FOCUS_UP);*/
         switch (parent.getId()) {
             case R.id.books_spinner: {
 
@@ -317,8 +318,6 @@ public class Main2Activity extends AppCompatActivity
                 //String Kannada_verses = dbhelper.getVerses("kan_bible", getBooks(sp1),1);
                 String hindi_verse = "No verses";
                 //raw text test starts
-
-
                 int num = 5;
                 int id = 8;
                 id = this.getResources().getIdentifier("hin_1_1", "raw", this.getPackageName());
@@ -338,18 +337,23 @@ public class Main2Activity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 //raw text test ends
-                hindi_verses.setText(hindi_verse);
+                ArrayAdapter praiseArrayAdapter5 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "hin_"));
+                hindiList.setAdapter(praiseArrayAdapter5);
+/*                hindi_verses.setText(hindi_verse);*/
                 //  String enlish_verses = dbhelper.getVerses("eng_bible", getBooks(sp1),1);
                 // english_verses.setText(enlish_verses);
                 String enlish_verse = "Not Found";
-                english_verses.setText(getVerse("1", "1", "niv_"));
+               // english_verses.setText(getVerse("1", "1", "niv_"));
+                ArrayAdapter praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "niv_"));
+                englishList.setAdapter(praiseArrayAdapter);
                 if ("hindi".equalsIgnoreCase(language)) {
-                    single_text.setText(getVerse("1", "1", "hin_"));
+                    praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "hin_"));
+                    singleList.setAdapter(praiseArrayAdapter);
                 } else if ("niv".equalsIgnoreCase(language)) {
-                    //  Toast.makeText(Main2Activity.this, "Language " + language +" selected", Toast.LENGTH_SHORT).show()  ;
-                    //single_text.setText(enlish_verses);
-                    single_text.setText(getVerse("1", "1", "niv_"));
-                }//
+                    //single_text.setText(getVerse("1", "1", "niv_"));
+                    praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "niv_"));
+                    singleList.setAdapter(praiseArrayAdapter);
+                }
                 break;
             }
             case R.id.chapters_spinner: {
@@ -375,15 +379,23 @@ public class Main2Activity extends AppCompatActivity
                     e.printStackTrace();
                 }
 
-                hindi_verses.setText(hindi_verse);
+                ArrayAdapter praiseArrayAdapter6 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                hindiList.setAdapter(praiseArrayAdapter6);
+               /* hindi_verses.setText(hindi_verse);*/
                 //String enlish_verses = dbhelper.getVerses("eng_bible", getBooks(sp1),Integer.parseInt(sp2));
                 // english_verses.setText(enlish_verses);
                 String enlish_verse = "Not Found";
-                english_verses.setText(getVerse(sp1, sp2, "niv_"));
+                ArrayAdapter praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                englishList.setAdapter(praiseArrayAdapter);
+               // english_verses.setText(getVerse(sp1, sp2, "niv_"));
                 if ("hindi".equalsIgnoreCase(language)) {
-                    single_text.setText(getVerse(sp1, sp2, "hin_"));
+                    ArrayAdapter praiseArrayAdapter1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                    singleList.setAdapter(praiseArrayAdapter1);
+                   // single_text.setText(getVerse(sp1, sp2, "hin_"));
                 } else if ("niv".equalsIgnoreCase(language)) {
-                    single_text.setText(getVerse(sp1, sp2, "niv_"));
+                    ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                    singleList.setAdapter(praiseArrayAdapter2);
+                    //single_text.setText(getVerse(sp1, sp2, "niv_"));
                 }
                 break;
             }
@@ -403,28 +415,33 @@ public class Main2Activity extends AppCompatActivity
                 animateFAB();
                 break;
             case R.id.fab2: {
-                single_text.setVisibility(View.VISIBLE);
-                hindi_verses.setVisibility(View.GONE);
-                english_verses.setVisibility(View.GONE);
-                single_text.setText(getVerse(sp1, sp2, "hin_"));
+                singleList.setVisibility(View.VISIBLE);
+                //single_text.setVisibility(View.VISIBLE);
+                hindiList.setVisibility(View.GONE);
+                englishList.setVisibility(View.GONE);
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                singleList.setAdapter(praiseArrayAdapter2);
                 language = "hindi";
                 break;
             }
             case R.id.fab3: {
                 this.bundle.putString("verses", "In the beginning God created the heaven and the earth.");
-                single_text.setVisibility(View.VISIBLE);
-                hindi_verses.setVisibility(View.GONE);
-                english_verses.setVisibility(View.GONE);
+                singleList.setVisibility(View.VISIBLE);
+                hindiList.setVisibility(View.GONE);
+                englishList.setVisibility(View.GONE);
                 language = "niv";
-                single_text.setText(getVerse(sp1, sp2, "niv_"));
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                singleList.setAdapter(praiseArrayAdapter2);
                 break;
             }
             case R.id.fab4: {
-                single_text.setVisibility(View.GONE);
-                hindi_verses.setVisibility(View.VISIBLE);
-                english_verses.setVisibility(View.VISIBLE);
-                hindi_verses.setText(getVerse(sp1, sp2, "hin_"));
-                english_verses.setText(getVerse(sp1, sp2, "niv_"));
+                singleList.setVisibility(View.GONE);
+                hindiList.setVisibility(View.VISIBLE);
+                englishList.setVisibility(View.VISIBLE);
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                englishList.setAdapter(praiseArrayAdapter2);
+                ArrayAdapter praiseArrayAdapter3 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                hindiList.setAdapter(praiseArrayAdapter3);
                 language = "both";
                 break;
             }
@@ -459,27 +476,25 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
-    public String getVerse(String sp1, String sp2, String bible) {
+    public ArrayList getVerse(String sp1, String sp2, String bible) {
         String verses = "Not Found";
         String file = bible + getBooks(sp1) + "_" + Integer.parseInt(sp2);
-        ;
+        ArrayList<String> versesArrayList = new ArrayList();
         int id = 1;
+        String line;
         id = this.getResources().getIdentifier(file, "raw", this.getPackageName());
         InputStream inputStream = getResources().openRawResource(id);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         int in;
         try {
-            in = inputStream.read();
-            while (in != -1) {
-                byteArrayOutputStream.write(in);
-                in = inputStream.read();
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            while ((line = br.readLine()) != null) {
+                versesArrayList.add(line);
             }
             inputStream.close();
-            verses = byteArrayOutputStream.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return verses;
+         return versesArrayList;
     }
 
     @Override
