@@ -40,13 +40,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -65,7 +72,7 @@ public class Main2Activity extends AppCompatActivity
     private Boolean isFabOpen = false;
     BooksChapters chapters = new BooksChapters();
     String defaulthint = "Search here";
-    ArrayList<String> listitems;
+    ArrayList<String> listitems,verseDate;
     Button closePopupBtn,shareVerse,shareVerseOnly,shareEearchResult,closeShareResult;
     PopupWindow popupWindow,popupWindowSearch;
     DrawerLayout verseLayout;
@@ -74,6 +81,12 @@ public class Main2Activity extends AppCompatActivity
     DBHelper dbhelper = new DBHelper(this);
     String searchResult = "test";
     String verseSelected = "Amen";
+    String verse_selected="Amen";
+    String book_name = "Genesis";
+    String chapter_number = "1";
+    String header = "";
+    boolean show=true;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,19 +106,32 @@ public class Main2Activity extends AppCompatActivity
         // Getting daily verse
 
         // todayverse.setText("Amen");
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd");
+        Integer dateToday = Integer.parseInt(f.format(new Date()));
         try {
             this.dbhelper.openDataBase();
-            verseToday = dbhelper.getVerse(doy);
-            todayverse.setText(verseToday);
+            verseDate = dbhelper.getVerse(doy);
+            String sss= String.valueOf(doy);
+           /* Toast.makeText(Main2Activity.this," DOY # "+sss, Toast.LENGTH_LONG).show();
+            Toast.makeText(Main2Activity.this, "verseDate.get(1) # "+verseDate.get(1), Toast.LENGTH_LONG).show();*/
+            if(dateToday == Integer.parseInt(verseDate.get(1)) ){
+                show = false;
+            }else{
+                show = true;
+            }
+            todayverse.setText(verseDate.get(0));
         }catch(Exception e){
 
         }
-        findViewById(R.id.drawer_layout).post(new Runnable() {
-            public void run() {
-                popupWindow.showAtLocation(findViewById(R.id.drawer_layout), Gravity.CENTER, 0, 0);
-            }
-        });
-
+        if(show) {
+            findViewById(R.id.drawer_layout).post(new Runnable() {
+                public void run() {
+                    popupWindow.showAtLocation(findViewById(R.id.drawer_layout), Gravity.CENTER, 0, 0);
+                }
+            });
+            this.dbhelper.openDataBase();
+            dbhelper.updateVersesDate(String.valueOf(doy), dateToday.toString());
+        }
         //close the popup window on button click
         closePopupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,7 +234,7 @@ public class Main2Activity extends AppCompatActivity
                     // Main2Activity.this.listitems = new ArrayList();
                     listitems = new ArrayList();
                     // Main2Activity.this.listitems.add("Please Search with Song name");
-                   // listitems.add("Please Search with different word");
+                    // listitems.add("Please Search with different word");
                     ArrayAdapter localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, Main2Activity.this.listitems);
                     ((ListView) Main2Activity.this.findViewById(R.id.searchresult)).setAdapter(localArrayAdapter);
                 }
@@ -225,7 +251,7 @@ public class Main2Activity extends AppCompatActivity
                  /*   dbhelper.openDataBase();                   */
                     String[] arrayOfString = searchVerse(paramAnonymousString);
                     localObject = arrayOfString;
-                    searchResult = arrayToString (arrayOfString);
+                    searchResult = arrayToString(arrayOfString);
                 } catch (Exception localException) {
                     Log.d("Db Open issue ", localException.getMessage());
                 }
@@ -294,8 +320,118 @@ public class Main2Activity extends AppCompatActivity
                 return true;
             }
         });
+
+        singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                book_name = String.valueOf(book.getSelectedItem());
+                chapter_number = String.valueOf(chapter.getSelectedItem());
+                verse_selected = book_name + " :" + chapter_number + "\n" + ((TextView) view).getText().toString();
+                header = "Share " + book_name + " " + chapter_number + "'s verse via";
+                try {
+                    Intent localIntent2 = new Intent("android.intent.action.SEND");
+                    localIntent2.setType("text/plain");
+                    localIntent2.putExtra("android.intent.extra.SUBJECT", "Word वचन  #");
+                    localIntent2.putExtra("android.intent.extra.TEXT", verse_selected);
+                    startActivity(Intent.createChooser(localIntent2, header));
+                } catch (Exception e) {
+
+                }
+            }
+        });
+
+        englishList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                book_name = String.valueOf(book.getSelectedItem());
+                chapter_number = String.valueOf(chapter.getSelectedItem());
+                verse_selected = book_name + " :" + chapter_number + "\n" + ((TextView) view).getText().toString();
+                header = "Share " + book_name + " " + chapter_number + "'s verse via";
+                try {
+                    Intent localIntent2 = new Intent("android.intent.action.SEND");
+                    localIntent2.setType("text/plain");
+                    localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
+                    localIntent2.putExtra("android.intent.extra.TEXT", verse_selected);
+                    startActivity(Intent.createChooser(localIntent2, header));
+                } catch (Exception e) {
+
+                }
+            }
+        });
+
+        hindiList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                book_name = String.valueOf(book.getSelectedItem());
+                chapter_number = String.valueOf(chapter.getSelectedItem());
+                verse_selected = book_name+" :"+chapter_number +"\n"+((TextView) view).getText().toString();
+                header ="Share "+ book_name +" "+chapter_number +  "'s verse via";
+                try {
+                    Intent localIntent2 = new Intent("android.intent.action.SEND");
+                    localIntent2.setType("text/plain");
+                    localIntent2.putExtra("android.intent.extra.SUBJECT", "वचन  #");
+                    localIntent2.putExtra("android.intent.extra.TEXT", verse_selected);
+                    startActivity(Intent.createChooser(localIntent2, header));
+                } catch (Exception e) {
+
+                }finally
+                {
+
+                }
+            }
+        });
+        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+            }
+
+            @Override
+            public void onAdClosed() {
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+        });
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+    }
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
+    }
     @Override
     public void onItemSelected(AdapterView<?> parent, View arg1, int arg2, long arg3) { /* TODO Auto-generated method stub*/
         String sp1 = String.valueOf(book.getSelectedItem());
@@ -545,6 +681,17 @@ public class Main2Activity extends AppCompatActivity
        else if (id == R.id.praises) {
            Intent localIntent = new Intent(Main2Activity.this, PraisesActivity.class);
            Main2Activity.this.startActivity(localIntent);
+       }
+       else if (id == R.id.vod) {
+           try {
+               Calendar cal = Calendar.getInstance();
+               int doy = cal.get(Calendar.DAY_OF_YEAR);
+               this.dbhelper.openDataBase();
+               verseDate = dbhelper.getVerse(doy);
+               Toast.makeText(Main2Activity.this,verseDate.get(0), Toast.LENGTH_LONG).show();
+           }catch(Exception e){
+
+           }
        }
        else if (id == R.id.nav_share) {
             String app_url = "https://play.google.com/store/apps/details?id=com.bible.hindibible";

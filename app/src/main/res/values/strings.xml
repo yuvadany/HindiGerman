@@ -79,7 +79,7 @@
         <item>"4"</item>
     </string-array>
     <string name="title_activity_main2">Praises स्तुति</string>
-
+     <string name="banner_home_footer">ca-app-pub-8821114814067767/8249375943</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

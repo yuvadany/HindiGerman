@@ -3,6 +3,7 @@ package com.bible.hindibible;
 /**
  * Created by user on 5/15/2018.
  */
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,15 +61,36 @@ public class DBHelper
     }
 
 
-    public String getVerse(int doy)
+    public ArrayList getVerse(int doy)
     {
         int day = doy;
+        ArrayList<String> dateAndVerse = new ArrayList<String>();
         String verse = "Amen";
-        Cursor localCursor = getReadableDatabase().rawQuery("SELECT verse  FROM verses where id ="+doy, null);
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT verse,date  FROM verses where id ="+doy, null);
         while (localCursor.moveToNext()) {
-            verse = localCursor.getString(0);
+            dateAndVerse.add( localCursor.getString(0));
+            dateAndVerse.add( localCursor.getString(1));
+            System.out.println(dateAndVerse.add( localCursor.getString(0) + " id and Date "
+                    +dateAndVerse.add( localCursor.getString(1))));
         }
-        return  verse;
+        return  dateAndVerse;
+    }
+
+    public boolean updateVersesDate(String doy,String today) {
+        // openDataBase();
+        try {
+            //CopyDataBaseFromAsset();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("date", today);
+            getWritableDatabase().update("verses", contentValues, "ID = ?", new String[]{doy});
+            getWritableDatabase().close();
+            return true;
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in updateVersesDate");
+        }
+        return true;
     }
 
     public String[] getPraises()
