@@ -3,45 +3,32 @@ package com.bible.hindibible;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import java.util.ArrayList;
-
-public class PraisesActivity extends AppCompatActivity {
-    DBHelper dbhelper = new DBHelper(this);
-    String praises[] = { "Praise God" };
-    ListView praiseView ;
-    ArrayAdapter praiseArrayAdapter;
+public class LyricsActivity extends AppCompatActivity {
+    TextView lyrivsView;
+    String title = "Song";
+    String lyrics = "Above All";
     private AdView mAdView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_praises);
-        setTitle("Praises स्तुति");
-        praiseView = (ListView) findViewById(R.id.praisesView);
-        try
-        {
-            this.dbhelper.openDataBase();
-            praises = dbhelper.getPraises();
+        setContentView(R.layout.activity_lyrics);
+        lyrivsView = ((TextView) findViewById(R.id.lyrics));
+        Bundle localBundle = getIntent().getExtras();
+        try {
+            title = localBundle.getString("title");
+            setTitle(title);
+            lyrics = localBundle.getString("lyrics");
+            lyrivsView.setText(lyrics);
+        } catch (Exception e) {
+
         }
-        catch (Exception localException)
-        {
-            System.out.println("Error...  # " + localException.getMessage());
-        }
-        praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, praises);
-        praiseView.setAdapter(praiseArrayAdapter);
-        // Back button starts
-        if(getSupportActionBar()!= null)
-        {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        // Back button ends
         mAdView = (AdView) findViewById(R.id.adView);
         mAdView.setAdListener(new AdListener() {
             @Override
@@ -70,6 +57,37 @@ public class PraisesActivity extends AppCompatActivity {
         });
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        // Back button starts
+        if(getSupportActionBar()!= null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        // Back button ends
+    }
+
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
     }
     // back option starts
     @Override

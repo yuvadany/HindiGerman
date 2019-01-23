@@ -8,12 +8,29 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.bible.hindibible.PraisesActivity">
-    <ListView
-        android:id="@+id/praisesView"
-        android:layout_width="fill_parent"
-        android:layout_marginBottom="50.0dip"
+    tools:context="com.bible.hindibible.EnglishSongsActivity">
+
+    <SearchView
+        android:id="@+id/searchSong"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <ListView
+        android:id="@+id/searchresult"
+        android:layout_width="fill_parent"
+        android:layout_marginBottom="35.0dip"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSearch"
+        android:layout_below="@+id/searchSong"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <ListView
+        android:id="@+id/listviewallsongs"
+        android:layout_marginBottom="50.0dip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchresult"
+        android:layout_alignRight="@+id/searchresult"
+        android:layout_alignEnd="@+id/searchresult" />
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"

@@ -78,8 +78,24 @@
         <item>"3"</item>
         <item>"4"</item>
     </string-array>
+    <string-array name="list">
+        <item>1-100</item>
+        <item>101-200</item>
+        <item>201-300</item>
+        <item>301-400</item>
+        <item>401-500</item>
+        <item>501-600</item>
+        <item>601-700</item>
+        <item>701-800</item>
+        <item>801-900</item>
+        <item>901-1000</item>
+    </string-array>
     <string name="title_activity_main2">Praises स्तुति</string>
-     <string name="banner_home_footer">ca-app-pub-8821114814067767/8249375943</string>
+    <string name="banner_home_footer">ca-app-pub-8821114814067767/8249375943</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="AboveAll">Above all powers, above all kings</string>
+    <string name="admob_interstitial_id">ca-app-pub-8821114814067767/9760500529</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_you_tube">YouTubeActivity</string>
 </resources>

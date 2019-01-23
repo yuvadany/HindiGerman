@@ -63,6 +63,13 @@ public class DBHelper
 
     public ArrayList getVerse(int doy)
     {
+        try {
+            CopyDataBaseFromAsset();
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in updateVersesDate");
+        }
         int day = doy;
         ArrayList<String> dateAndVerse = new ArrayList<String>();
         String verse = "Amen";
@@ -93,16 +100,6 @@ public class DBHelper
         return true;
     }
 
-    public String[] getPraises()
-    {
-        String verse = "Amen";
-        ArrayList<String> praiseArrayList = new ArrayList();
-        Cursor localCursor = getReadableDatabase().rawQuery("SELECT id,praise,verse  FROM praises", null);
-        while (localCursor.moveToNext()) {
-            praiseArrayList.add(localCursor.getString(0)+". "+localCursor.getString(1) +" ("+localCursor.getString(2)+" )");
-        }
-        return (String[])praiseArrayList.toArray(new String[praiseArrayList.size()]);
-    }
 
     public void onCreate(SQLiteDatabase paramSQLiteDatabase) {}
 
@@ -110,13 +107,14 @@ public class DBHelper
 
     public SQLiteDatabase openDataBase()
     {
+
         File localFile = ctx.getDatabasePath("dailyversehindi.sqlite");
 
         try
         {
             if (!localFile.exists()) {CopyDataBaseFromAsset(); }
             //the below block commented to addres Favorite table refresh on each application cloing time
-            //  CopyDataBaseFromAsset();
+            // CopyDataBaseFromAsset();
             return SQLiteDatabase.openDatabase(localFile.getPath(), null, SQLiteDatabase.OPEN_READWRITE);
         }
         catch (IOException localIOException)
@@ -125,6 +123,89 @@ public class DBHelper
         }
     }
 
+    public String getPraises(String  id)
+    {
+        try {
+            CopyDataBaseFromAsset();
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in updateVersesDate");
+        }
+        int number2 = Integer.parseInt(id)-99;
+        String from = String.valueOf(number2);
+        StringBuffer sf = new StringBuffer();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT id,praise,reference FROM praisesenglishkjvniv where id between " + number2 + " and " + id, null);
+        while (localCursor.moveToNext()) {
+            sf.append("\n"+localCursor.getString(0) +".  " + localCursor.getString(1) + "  ( "+ localCursor.getString(2) +" )\n" ) ;
+        }
+        return sf.toString();
+    }
 
+    public String[] getSongDetails()
+    {
+        try {
+            CopyDataBaseFromAsset();
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in updateVersesDate");
+        }
+        ArrayList localArrayList = new ArrayList();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT TITLE FROM ENGLISHSONGS ORDER BY title", null);
+        int i=1;
+        while (localCursor.moveToNext()) {
+            localArrayList.add(i+"."+localCursor.getString(0));
+            i++;
+        }
+        return (String[])localArrayList.toArray(new String[localArrayList.size()]);
+    }
+
+    public String getLyrics(String title)
+    {
+        Cursor localCursor = getReadableDatabase().rawQuery("Select  title,lyrics from ENGLISHSONGS where title ='" + title + "'", null);
+        int i = 0;
+        String str = new String();
+        while (localCursor.moveToNext())
+        {
+            str =  localCursor.getString(0) + "\n" +localCursor.getString(1) ;
+        }
+        return str;
+    }
+    public String[] getPraises()
+    {
+        try {
+            CopyDataBaseFromAsset();
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in getPraises() - Hindi Praises");
+        }
+        String verse = "Amen";
+        ArrayList<String> praiseArrayList = new ArrayList();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT id,praise,reference  FROM praisesHindi", null);
+        while (localCursor.moveToNext()) {
+            praiseArrayList.add(localCursor.getString(0)+". "+localCursor.getString(1) +" ("+localCursor.getString(2)+" )");
+        }
+        return (String[])praiseArrayList.toArray(new String[praiseArrayList.size()]);
+    }
+    public ArrayList searchSong(String word)
+    {
+        System.out.println(" Keyword # "+word);
+        try {
+            CopyDataBaseFromAsset();
+        }
+        catch(Exception e )
+        {
+            System.out.println("Error in updateVersesDate");
+        }
+        ArrayList localArrayList = new ArrayList();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT title FROM ENGLISHSONGS where  " +
+                "title like '%"+word+"%'", null);
+        while (localCursor.moveToNext()) {
+            localArrayList.add(localCursor.getString(0));
+        }
+        return localArrayList;
+    }
 }
 
