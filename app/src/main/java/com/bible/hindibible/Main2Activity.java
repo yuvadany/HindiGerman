@@ -1,16 +1,17 @@
 package com.bible.hindibible;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.ActionMode;
-import android.view.Gravity;
+import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
@@ -26,13 +27,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -44,11 +44,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,15 +54,17 @@ import java.util.StringTokenizer;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+
+import static com.bible.hindibible.BooksChapters.getChaptersCount;
+
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     //  DBHelper dbhelper = new DBHelper(this);
     public int book_number = 1;
-    ArrayList<String> versesArrayList = new ArrayList();
-    StringBuffer buffer = new StringBuffer();
+    SharedPreferences sharedpreferences, sharedPreferencesReadMode;
+    final Context context = this;
     ScrollView first, second, third;
     public HashMap chaptersMap = new HashMap<String, Integer>();
     TextView hindi_verses, english_verses, single_view;
@@ -74,7 +74,7 @@ public class Main2Activity extends AppCompatActivity
     Bundle bundle = new Bundle();
     ScrollView englishview;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
-    private FloatingActionButton fabShare, fab1, fab2, fab3, fab4, verseShare;
+    private FloatingActionButton fabShare, fab1, fab2, fab3, fab4;
     private Boolean isFabOpen = false;
     BooksChapters chapters = new BooksChapters();
     String defaulthint = "Search here";
@@ -92,145 +92,53 @@ public class Main2Activity extends AppCompatActivity
     String chapter_number = "1";
     String header = "";
     private AdView mAdView;
+    public static final String SHARED_PREF = "Last_Read";
+    public static final String BOOK_NUMBER = "book_selected";
+    public static final String BOOK_NAME = "book_name";
+    public static final String CHAPTER_NUMBER = "chapter_selected";
+    public static final String CHAPTER_NUMBER_BOOKMARK = "chapter";
+    public static final String SHARED_PREF_BOOKMARK = "Book_Mark";
+    public static final String SELECTED_VERSE = "Selected_Verse";
+    public static final String SHARED_PREF_FONT_SIZE = "font_size";
+    public static final float TEXT_FONT_SIZE = 13;
+    public static final String TEXT_FONT_SIZE_VAR = "text_float_size";
+    public static final String SHARED_PREF_NIGHT_DAY_MODE = "Night_Day_Mode";
+    public static final String TEXT_COLOUR_VAR = "Text_Colour_Var";
+    public static final String BACKROUND_COLOUR_VAR = "Background_Colour_Var";
+    public static final int BLACK_COLOUR = Color.parseColor("#000000");
+    public static final int WHITE_COLOUR = Color.parseColor("#f2f2f2");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // Popup Verse Starts
         verseToday = "Amen";
+        /*sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE);
+        editor.commit();*/
+        /*sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorReadMode = sharedPreferencesReadMode.edit();
+        editorReadMode.putInt(TEXT_COLOUR_VAR, TEXT_COLOUR);
+        editorReadMode.putInt(BACKROUND_COLOUR_VAR, BACKROUND_COLOUR);
+        editorReadMode.commit();*/
         Calendar cal = Calendar.getInstance();
         int doy = cal.get(Calendar.DAY_OF_YEAR);
         LayoutInflater layoutInflater = (LayoutInflater) Main2Activity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View customView = layoutInflater.inflate(R.layout.versepopup, null);
-      /*  verseLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        closePopupBtn = (Button) customView.findViewById(R.id.closePopupBtn);
-        shareVerse = (Button) customView.findViewById(R.id.shareVerse);
-        todayverse = (TextView) customView.findViewById(R.id.versetoday);
-        popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        // Getting daily verse
-
-        // todayverse.setText("Amen");
-        try {
-        this.dbhelper.openDataBase();
-        verseToday = dbhelper.getVerse(doy);
-        todayverse.setText(verseToday);
-        }catch(Exception e){
-
-        }
-        findViewById(R.id.drawer_layout).post(new Runnable() {
-public void run() {
-        popupWindow.showAtLocation(findViewById(R.id.drawer_layout), Gravity.CENTER, 0, 0);
-        }
-        });
-
-        //close the popup window on button click
-        closePopupBtn.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-        popupWindow.dismiss();
-        }
-        });
-        shareVerse.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-        String app_url = "https://play.google.com/store/apps/details?id=com.englishbible.germanbible";
-        verseToday = verseToday + "\n\n"+app_url;
-        try {
-        Intent localIntent2 = new Intent("android.intent.action.SEND");
-        localIntent2.setType("text/plain");
-        localIntent2.putExtra("android.intent.extra.SUBJECT", "Today's Word #");
-        localIntent2.putExtra("android.intent.extra.TEXT", verseToday);
-        startActivity(Intent.createChooser(localIntent2, "Today's  verse Share"));
-        } catch (Exception e) {
-
-        }*/
-      /*  }
-        });*/
-        // Popup Verse Ends
-        //share Verse/Search result starts
-
-        //share Verse/Search result ends
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //Screen width set starts Jan 23 -2018 by Yuvaraj Palanisamy
         int width = getWindowManager().getDefaultDisplay().getWidth();
-        //  int height = getWindowManager().getDefaultDisplay().getHeight();
-        /*first = (ScrollView) findViewById(R.id.scrollView1);
-        second = (ScrollView) findViewById(R.id.scrollView2);
-        third = (ScrollView) findViewById(R.id.scrollView3);*/
-        // Toast.makeText(getApplicationContext(), "Width " + width, Toast.LENGTH_LONG).show();
-        //first.getLayoutParams().width = width / 2 - 5;
-        //  second.getLayoutParams().
-        /*RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) second.getLayoutParams();
-        layoutParams.setMargins(width / 2 + 5, 0, 0, 0);
-        second.setLayoutParams(layoutParams);*/
-        //Screen width set starts Jan 23 -2018 by Yuvaraj Palanisamy Ends
         singleList = ((ListView) findViewById(R.id.SingleText));
-        // Multiple Selection starts
-        //  singleList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
-      /*  singleList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            ArrayList list_item = new ArrayList<>();
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
-                //capture total checked items
-              int   checkedCount = singleList.getCheckedItemCount();
-
-                //setting CAB title
-                mode.setTitle(checkedCount + " Selected");
-
-                //list_item.add(id);
-                if (checked) {
-                    list_item.add(id);     // Add to list when checked ==  true
-                } else {
-                    list_item.remove(id);
-                }
-
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                //Inflate the CAB
-                MenuInflater inflater = mode.getMenuInflater();
-                //inflater.inflate(R.menu.contextual_menu, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final int deleteSize = list_item.size();
-                int itemId = item.getItemId();
-                Toast.makeText(Main2Activity.this, itemId, Toast.LENGTH_SHORT).show();
-
-                list_item.clear();
-                mode.finish();
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                // refresh list after deletion
-                //displayDataList();
-            }
-        });*/
-        // Multiple Selection sends
         singleList.setVisibility(View.GONE);
         hindiList = ((ListView) findViewById(R.id.hindi_text));
         englishList = ((ListView) findViewById(R.id.english_text));
         book = (Spinner) findViewById(R.id.books_spinner);
         chapter = (Spinner) findViewById(R.id.chapters_spinner);
-        /*// Chapter spinner starting point
-        RelativeLayout.LayoutParams layoutParamsSpinner = (RelativeLayout.LayoutParams) second.getLayoutParams();
-        layoutParamsSpinner.setMargins(width / 2, 0, 0, 0);
-        chapter.setLayoutParams(layoutParamsSpinner);
-        //*/
+
         //book spinner starts
         String[] booksArray = new String[66];
         booksArray = loadBooks();
@@ -240,10 +148,7 @@ public void onClick(View v) {
         //book spinner ends
         book.setOnItemSelectedListener(this);
         chapter.setOnItemSelectedListener(this);
-        // englishview = (ScrollView) findViewById(R.id.scrollView2);
         fabShare = (FloatingActionButton) findViewById(R.id.share);
-        verseShare = (FloatingActionButton) findViewById(R.id.verseShare);
-        verseShare.setVisibility(View.GONE);
         fabShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -286,11 +191,22 @@ public void onClick(View v) {
                 SearchView localSearchView = (SearchView) Main2Activity.this.findViewById(R.id.searchverse);
                 if ((paramAnonymousString == null) || ("".equals(paramAnonymousString))) {
                     localSearchView.setQueryHint("Type a word here");
-                    // Main2Activity.this.listitems = new ArrayList();
                     listitems = new ArrayList();
-                    // Main2Activity.this.listitems.add("Please Search with Song name");
-                    // listitems.add("Please Search with different word");
-                    ArrayAdapter localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, Main2Activity.this.listitems);
+                    ArrayAdapter localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, Main2Activity.this.listitems) {
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+                            // Return the view
+                            return view;
+                        }
+                    };
                     ((ListView) Main2Activity.this.findViewById(R.id.searchresult)).setAdapter(localArrayAdapter);
                 }
                 return true;
@@ -298,12 +214,7 @@ public void onClick(View v) {
 
             public boolean onQueryTextSubmit(String paramAnonymousString) {
                 Object localObject[] = {"No matches Found"};
-              /*  SearchView   localSearchView = (SearchView)findViewById(R.id.searchverse);
-                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                 imm.hideSoftInputFromWindow(localSearchView.getWindowToken(), 0);*/
                 try {
-                    //  Main2Activity.this.dbhelper.openDataBase();
-                 /*   dbhelper.openDataBase();                   */
                     String[] arrayOfString = searchVerse(paramAnonymousString);
                     localObject = arrayOfString;
                     searchResult = arrayToString(arrayOfString);
@@ -314,67 +225,31 @@ public void onClick(View v) {
                 ListView localListView;
                 Main2Activity.this.listitems = new ArrayList(Arrays.asList((Object[]) localObject));
                 listitems = new ArrayList(Arrays.asList((Object[]) localObject));
-                //localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, Main2Activity.this.listitems);
-                localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, listitems);
+                localArrayAdapter = new ArrayAdapter(Main2Activity.this, android.R.layout.simple_list_item_1, listitems) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
+                    }
+                };
                 localListView = (ListView) Main2Activity.this.findViewById(R.id.searchresult);
                 localListView.setAdapter(localArrayAdapter);
-               /* localListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Bundle localBundle = new Bundle();
-                    LayoutInflater layoutInflater = (LayoutInflater) Main2Activity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    verseSelected = ((TextView) view).getText().toString();
-                    View customViewShare = layoutInflater.inflate(R.layout.sharesearch,null);
-                    shareEearchResult = (Button) customViewShare.findViewById(R.id.shareSearchResult);
-                    shareVerseOnly = (Button) customViewShare.findViewById(R.id.shareVerseOnly);
-                    closeShareResult = (Button) customViewShare.findViewById(R.id.closeShareResult);
-                    popupWindowSearch = new PopupWindow(customViewShare, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                *//*    shareVerseOnly.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                localIntent2.setType("text/plain");
-                                localIntent2.putExtra("android.intent.extra.SUBJECT", "Share Word वचन  #");
-                                localIntent2.putExtra("android.intent.extra.TEXT", verseSelected);
-                                startActivity(Intent.createChooser(localIntent2, "Selected verse Share"));
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    });
-                    shareEearchResult.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                localIntent2.setType("text/plain");
-                                localIntent2.putExtra("android.intent.extra.SUBJECT", "Share Search वचन  #");
-                                localIntent2.putExtra("android.intent.extra.TEXT", searchResult);
-                                startActivity(Intent.createChooser(localIntent2, "Share search Result"));
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    });
-                    closeShareResult.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            popupWindowSearch.dismiss();
-                        }
-                    });
-                    //Toast.makeText(Main2Activity.this,  searchResult , Toast.LENGTH_SHORT).show() ;
-                    findViewById(R.id.drawer_layout).post(new Runnable() {
-                        public void run() {
-                            popupWindowSearch.showAtLocation(findViewById(R.id.drawer_layout), Gravity.CENTER, 0, 0);
-
-                        }
-                    });*//*
-                }
-            });*/
                 return true;
             }
         });
+        registerForContextMenu(singleList);
+        registerForContextMenu(englishList);
+        registerForContextMenu(hindiList);
 
        /* singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -393,8 +268,7 @@ public void onClick(View v) {
 
                 }
             }
-        });*/
-
+        });
 
         englishList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -432,7 +306,7 @@ public void onClick(View v) {
 
                 }
             }
-        });
+        });*/
         mAdView = (AdView) findViewById(R.id.adView);
         mAdView.setAdListener(new AdListener() {
             @Override
@@ -491,14 +365,15 @@ public void onClick(View v) {
     public void onItemSelected(AdapterView<?> parent, View arg1, int arg2, long arg3) { /* TODO Auto-generated method stub*/
         String sp1 = String.valueOf(book.getSelectedItem());
         String sp2 = String.valueOf(chapter.getSelectedItem());
-        /*first.fullScroll(ScrollView.FOCUS_UP);
-        second.fullScroll(ScrollView.FOCUS_UP);
-        third.fullScroll(ScrollView.FOCUS_UP);*/
+        sharedpreferences = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(BOOK_NUMBER, sp1);
+        editor.putString(CHAPTER_NUMBER, sp2);
+        editor.commit();
         switch (parent.getId()) {
             case R.id.books_spinner: {
-
                 int chapters = getBooksChapter(sp1); /*  verses.setText(sp1);*/
-                Toast.makeText(Main2Activity.this, sp1, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), sp1, Toast.LENGTH_SHORT).show();
                 List<String> list = new ArrayList<String>();
                 for (int i = 0; i < chapters; i++) {
                     list.add(Integer.toString(i + 1));
@@ -507,12 +382,11 @@ public void onClick(View v) {
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 dataAdapter.notifyDataSetChanged();
                 chapter.setAdapter(dataAdapter);
-                //String Kannada_verses = dbhelper.getVerses("kan_bible", getBooks(sp1),1);
                 String hindi_verse = "No verses";
                 //raw text test starts
                 int num = 5;
                 int id = 8;
-                id = this.getResources().getIdentifier("hin_1_1", "raw", this.getPackageName());
+                id = this.getResources().getIdentifier("na_1_1", "raw", this.getPackageName());
                 InputStream inputStream = getResources().openRawResource(id);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 int in;
@@ -523,94 +397,96 @@ public void onClick(View v) {
                         in = inputStream.read();
                     }
                     inputStream.close();
-                    // System.out.println(" Next  " + byteArrayOutputStream.toString());
                     hindi_verse = byteArrayOutputStream.toString();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                //raw text test ends
-                ArrayAdapter praiseArrayAdapter5 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "hin_"));
+                sharedpreferences = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
+                ArrayAdapter praiseArrayAdapter5 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sharedpreferences.getString(BOOK_NUMBER, "1"), checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "na_")) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
+                    }
+                };
                 hindiList.setAdapter(praiseArrayAdapter5);
-/*                hindi_verses.setText(hindi_verse);*/
-                //  String enlish_verses = dbhelper.getVerses("eng_bible", getBooks(sp1),1);
-                // english_verses.setText(enlish_verses);
-                String enlish_verse = "Not Found";
-                // english_verses.setText(getVerse("1", "1", "niv_"));
-                ArrayAdapter praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse("1", "1", "niv_"));
+                // Register the ListView  for Context menu
+                ArrayAdapter praiseArrayAdapter =
+                        new ArrayAdapter(this, android.R.layout.simple_list_item_1,
+                                getVerse(sharedpreferences.getString(BOOK_NUMBER, "1"), checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"),
+                                        sharedpreferences.getString(CHAPTER_NUMBER, "1")), "niv_")) {
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+                                /// Get the Item from ListView
+                                View view = super.getView(position, convertView, parent);
+
+                                TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                                sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                                sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                                tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                                tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                                // Return the view
+                                return view;
+                            }
+                        };
                 englishList.setAdapter(praiseArrayAdapter);
+                registerForContextMenu(englishList);
                 if ("hindi".equalsIgnoreCase(language)) {
-                    ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse("1", "1", "hin_"));
-                    singleList.setAdapter(praiseArrayAdapter);
-                    buffer = new StringBuffer();
-                    versesArrayList = getVerse("1", "1", "hin_");
-                    singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sharedpreferences.getString(BOOK_NUMBER, "1"), checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "na_")) {
                         @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // TODO Auto-generated method stub
-                            verseShare.setVisibility(View.VISIBLE);
-                            buffer.append(((TextView) view).getText().toString());
-                            verseShare.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        book_name = String.valueOf(book.getSelectedItem());
-                                        chapter_number = String.valueOf(chapter.getSelectedItem());
-                                        header = book_name + " " + chapter_number + "'s verse";
-                                        Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                        localIntent2.setType("text/plain");
-                                        localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                        localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                        startActivity(Intent.createChooser(localIntent2, header));
-                                    } catch (Exception e) {
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
 
-                                    }
-                                }
-                            });
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
 
-
+                            // Return the view
+                            return view;
                         }
-                    });
+                    };
+                    singleList.setAdapter(praiseArrayAdapter);
                 } else if ("niv".equalsIgnoreCase(language)) {
-                    //single_text.setText(getVerse("1", "1", "niv_"));
-                    ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse("1", "1", "niv_"));
-                    singleList.setAdapter(praiseArrayAdapter);
-                    versesArrayList = getVerse("1", "1", "niv_");
-                    buffer = new StringBuffer();
-                    singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sharedpreferences.getString(BOOK_NUMBER, "1"), checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "niv_")) {
                         @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // TODO Auto-generated method stub
-                            verseShare.setVisibility(View.VISIBLE);
-                            buffer.append(((TextView) view).getText().toString());
-                            verseShare.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        book_name = String.valueOf(book.getSelectedItem());
-                                        chapter_number = String.valueOf(chapter.getSelectedItem());
-                                        header = book_name + " " + chapter_number + "'s verse";
-                                        Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                        localIntent2.setType("text/plain");
-                                        localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                        localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                        startActivity(Intent.createChooser(localIntent2, header));
-                                    } catch (Exception e) {
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
 
-                                    }
-                                }
-                            });
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
 
-
+                            // Return the view
+                            return view;
                         }
-                    });
+                    };
+                    singleList.setAdapter(praiseArrayAdapter);
                 }
                 break;
             }
             case R.id.chapters_spinner: {
-
-                //third.fullScroll(ScrollView.FOCUS_UP);
-                //String Kannada_verses = dbhelper.getVerses("kan_bible", getBooks(sp1),Integer.parseInt(sp2));
-                String file = "hin_" + getBook_number(sp1) + "_" + Integer.parseInt(sp2);
+                sharedpreferences = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
+                String file = "na_" + getBook_number(sp1) + "_" + Integer.parseInt(sp2);
                 String hindi_verse = "test ";
                 int id = 1;
                 id = this.getResources().getIdentifier(file, "raw", this.getPackageName());
@@ -629,86 +505,132 @@ public void onClick(View v) {
                     e.printStackTrace();
                 }
 
-                ArrayAdapter praiseArrayAdapter6 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                ArrayAdapter praiseArrayAdapter6 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "na_")) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
+                    }
+                };
                 hindiList.setAdapter(praiseArrayAdapter6);
-               /* hindi_verses.setText(hindi_verse);*/
+                /* hindi_verses.setText(hindi_verse);*/
                 //String enlish_verses = dbhelper.getVerses("eng_bible", getBooks(sp1),Integer.parseInt(sp2));
                 // english_verses.setText(enlish_verses);
                 String enlish_verse = "Not Found";
-                ArrayAdapter praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                ArrayAdapter praiseArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "niv_")) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
+                    }
+                };
                 englishList.setAdapter(praiseArrayAdapter);
                 // english_verses.setText(getVerse(sp1, sp2, "niv_"));
                 if ("hindi".equalsIgnoreCase(language)) {
-                    ArrayAdapter praiseArrayAdapter1 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse(sp1, sp2, "hin_"));
+                    ArrayAdapter praiseArrayAdapter1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "na_")) {
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                            // Return the view
+                            return view;
+                        }
+                    };
                     singleList.setAdapter(praiseArrayAdapter1);
-                    buffer = new StringBuffer();
-                    versesArrayList = getVerse(sp1, sp2, "hin_");
-                    singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // TODO Auto-generated method stub
-                            verseShare.setVisibility(View.VISIBLE);
-                            buffer.append(((TextView) view).getText().toString());
-                            verseShare.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        book_name = String.valueOf(book.getSelectedItem());
-                                        chapter_number = String.valueOf(chapter.getSelectedItem());
-                                        header = book_name + " " + chapter_number + "'s verse";
-                                        Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                        localIntent2.setType("text/plain");
-                                        localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                        localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                        startActivity(Intent.createChooser(localIntent2, header));
-                                    } catch (Exception e) {
-
-                                    }
-                                }
-                            });
-
-
-                        }
-                    });
-                    // single_text.setText(getVerse(sp1, sp2, "hin_"));
+                    // single_text.setText(getVerse(sp1, sp2, "na_"));
                 } else if ("niv".equalsIgnoreCase(language)) {
-                    ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse(sp1, sp2, "niv_"));
-                    singleList.setAdapter(praiseArrayAdapter2);
-                    buffer = new StringBuffer();
-                    //single_text.setText(getVerse(sp1, sp2, "niv_"));
-                    versesArrayList = getVerse(sp1, sp2, "niv_");
-                    singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, checkChaptersCount(sharedpreferences.getString(BOOK_NUMBER, "1"), sharedpreferences.getString(CHAPTER_NUMBER, "1")), "niv_")) {
                         @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // TODO Auto-generated method stub
-                            verseShare.setVisibility(View.VISIBLE);
-                            buffer.append(((TextView) view).getText().toString());
-                            verseShare.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        book_name = String.valueOf(book.getSelectedItem());
-                                        chapter_number = String.valueOf(chapter.getSelectedItem());
-                                        header = book_name + " " + chapter_number + "'s verse";
-                                        Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                        localIntent2.setType("text/plain");
-                                        localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                        localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                        startActivity(Intent.createChooser(localIntent2, header));
-                                    } catch (Exception e) {
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
 
-                                    }
-                                }
-                            });
-
-
+                            // Return the view
+                            return view;
                         }
-                    });
+                    };
+                    singleList.setAdapter(praiseArrayAdapter2);
+                    //single_text.setText(getVerse(sp1, sp2, "niv_"));
                 }
                 break;
             }
 
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.many_options, menu);
+        // menu.setHeaderTitle("Select The Action");
+        //if (v.getId() == R.id.english_text) {
+        book_name = String.valueOf(book.getSelectedItem());
+        chapter_number = String.valueOf(chapter.getSelectedItem());
+        ListView lv = (ListView) v;
+        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        String verse = (String) lv.getItemAtPosition(acmi.position);
+        sharedpreferences = getSharedPreferences(SHARED_PREF_BOOKMARK, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(SELECTED_VERSE, verse);
+        editor.putString(BOOK_NAME, book_name);
+        editor.putString(CHAPTER_NUMBER_BOOKMARK, chapter_number);
+        editor.commit();
+        // }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        sharedpreferences = getSharedPreferences(SHARED_PREF_BOOKMARK, Context.MODE_PRIVATE);
+        if (item.getItemId() == R.id.shareVerseMenu) {
+            book_name = String.valueOf(book.getSelectedItem());
+            chapter_number = String.valueOf(chapter.getSelectedItem());
+            verse_selected = book_name + " :" + chapter_number + "\n" + sharedpreferences.getString(SELECTED_VERSE, "Holy");
+            header = "Share " + book_name + " " + chapter_number + "'s verse via";
+            try {
+                Intent localIntent = new Intent("android.intent.action.SEND");
+                localIntent.setType("text/plain");
+                localIntent.putExtra("android.intent.extra.SUBJECT", "Word  #");
+                localIntent.putExtra("android.intent.extra.TEXT", verse_selected);
+                startActivity(Intent.createChooser(localIntent, header));
+            } catch (Exception e) {
+            }
+        } else if (item.getItemId() == R.id.bookmark) {
+            dbhelper.saveBookmark(sharedpreferences.getString(BOOK_NAME, "Genesis") + sharedpreferences.getString(CHAPTER_NUMBER_BOOKMARK, "1") + " : " + sharedpreferences.getString(SELECTED_VERSE, "Holy"));
+        }
+        return true;
     }
 
     @Override
@@ -724,90 +646,92 @@ public void onClick(View v) {
                 break;
             case R.id.fab2: {
                 singleList.setVisibility(View.VISIBLE);
-                fabShare.setVisibility(View.GONE);
-                //single_text.setVisibility(View.VISIBLE);
                 hindiList.setVisibility(View.GONE);
                 englishList.setVisibility(View.GONE);
-                //  ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
-                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse(sp1, sp2, "hin_"));
-                singleList.setAdapter(praiseArrayAdapter2);
-                versesArrayList = getVerse(sp1, sp2, "hin_");
-                buffer = new StringBuffer();
-                singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "na_")) {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // TODO Auto-generated method stub
-                        buffer.append(((TextView) view).getText().toString());
-                        verseShare.setVisibility(View.VISIBLE);
-                        verseShare.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                try {
-                                    book_name = String.valueOf(book.getSelectedItem());
-                                    chapter_number = String.valueOf(chapter.getSelectedItem());
-                                    header = book_name + " " + chapter_number + "'s verse";
-                                    Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                    localIntent2.setType("text/plain");
-                                    localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                    localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                    startActivity(Intent.createChooser(localIntent2, header));
-                                } catch (Exception e) {
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
 
-                                }
-                            }
-                        });
-
-
+                        // Return the view
+                        return view;
                     }
-                });
+                };
+                singleList.setAdapter(praiseArrayAdapter2);
                 language = "hindi";
                 break;
             }
             case R.id.fab3: {
                 this.bundle.putString("verses", "In the beginning God created the heaven and the earth.");
                 singleList.setVisibility(View.VISIBLE);
-                fabShare.setVisibility(View.GONE);
                 hindiList.setVisibility(View.GONE);
                 englishList.setVisibility(View.GONE);
                 language = "niv";
-                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.select_dialog_multichoice, getVerse(sp1, sp2, "niv_"));
-                singleList.setAdapter(praiseArrayAdapter2);
-                versesArrayList = getVerse(sp1, sp2, "niv_");
-                buffer = new StringBuffer();
-                singleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_")) {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // TODO Auto-generated method stub
-                        buffer.append(((TextView) view).getText().toString());
-                        verseShare.setVisibility(View.VISIBLE);
-                        verseShare.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                try {
-                                    book_name = String.valueOf(book.getSelectedItem());
-                                    chapter_number = String.valueOf(chapter.getSelectedItem());
-                                    header = book_name + " " + chapter_number + "'s verse";
-                                    Intent localIntent2 = new Intent("android.intent.action.SEND");
-                                    localIntent2.setType("text/plain");
-                                    localIntent2.putExtra("android.intent.extra.SUBJECT", "Word #");
-                                    localIntent2.putExtra("android.intent.extra.TEXT", header + "\n" + buffer.toString());
-                                    startActivity(Intent.createChooser(localIntent2, header));
-                                } catch (Exception e) {
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
 
-                                }
-                            }
-                        });
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
                     }
-                });
+                };
+                singleList.setAdapter(praiseArrayAdapter2);
                 break;
             }
             case R.id.fab4: {
                 singleList.setVisibility(View.GONE);
                 hindiList.setVisibility(View.VISIBLE);
                 englishList.setVisibility(View.VISIBLE);
-                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_"));
+                ArrayAdapter praiseArrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "niv_")) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+
+                        // Return the view
+                        return view;
+                    }
+                };
                 englishList.setAdapter(praiseArrayAdapter2);
-                ArrayAdapter praiseArrayAdapter3 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "hin_"));
+                ArrayAdapter praiseArrayAdapter3 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, getVerse(sp1, sp2, "na_")) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR, TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
+                        // Return the view
+                        return view;
+                    }
+                };
                 hindiList.setAdapter(praiseArrayAdapter3);
                 language = "both";
                 break;
@@ -819,9 +743,6 @@ public void onClick(View v) {
 
         if (isFabOpen) {
             fab2.startAnimation(rotate_backward);
-            // fab2.startAnimation(fab_close);
-            //  fab3.startAnimation(fab_close);
-            // fab4.startAnimation(fab_close);
             fab2.startAnimation(fab_open);
             fab3.startAnimation(fab_open);
             fab4.startAnimation(fab_open);
@@ -830,7 +751,6 @@ public void onClick(View v) {
             fab4.setClickable(true);
             isFabOpen = false;
         } else {
-
             fab1.startAnimation(rotate_forward);
             fab2.startAnimation(fab_open);
             fab3.startAnimation(fab_open);
@@ -839,7 +759,6 @@ public void onClick(View v) {
             fab3.setClickable(true);
             fab4.setClickable(true);
             isFabOpen = true;
-
         }
     }
 
@@ -877,7 +796,7 @@ public void onClick(View v) {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -899,19 +818,17 @@ public void onClick(View v) {
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.rate) {
+        if (id == R.id.bookmark) {
+            startActivity(new Intent(this, BookmarkActivity.class));
+        } else if (id == R.id.settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        }   else if (id == R.id.rate){
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.bible.hindibible"));
             startActivity(intent);
-        } else if (id == R.id.bible) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.transliteratedbible.hindibible"));
-            startActivity(intent);
         } else if (id == R.id.praises) {
             startActivity(new Intent(this, EnglishPraisesActivity.class));
-        }
-        else if (id == R.id.vod) {
+        } else if (id == R.id.vod) {
             try {
                 Calendar cal = Calendar.getInstance();
                 int doy = cal.get(Calendar.DAY_OF_YEAR);
@@ -966,13 +883,8 @@ public void onClick(View v) {
         int id = 1;
         words[0] = verse.substring(0, 1).toUpperCase() + verse.substring(1).toLowerCase();
         words[1] = verse.substring(0, 1).toLowerCase() + verse.substring(1).toLowerCase();
-        //Toast.makeText(Main2Activity.this, words[1], Toast.LENGTH_SHORT).show();
-       /* for (int m=0; m<words.length; m++)
-        {*/
-        // verse = words[m];
-
         for (int i = 1; i <= 66; i++) {
-            for (int j = 1; j <= chapters.getChaptersCount(i); j++) {
+            for (int j = 1; j <= getChaptersCount(i); j++) {
                 file = "niv_" + i + "_" + j;
                 id = this.getResources().getIdentifier(file, "raw", this.getPackageName());
                 //  Toast.makeText(Main2Activity.this,  this.getPackageName(), Toast.LENGTH_SHORT).show();
@@ -994,12 +906,10 @@ public void onClick(View v) {
                 }
             }
         }
-        //Toast.makeText(Main2Activity.this, msg, Toast.LENGTH_LONG).show();
         for (int i = 1; i <= 66; i++) {
-            for (int j = 1; j <= chapters.getChaptersCount(i); j++) {
-                file = "hin_" + i + "_" + j;
+            for (int j = 1; j <= getChaptersCount(i); j++) {
+                file = "na_" + i + "_" + j;
                 id = this.getResources().getIdentifier(file, "raw", this.getPackageName());
-                //  Toast.makeText(Main2Activity.this,  this.getPackageName(), Toast.LENGTH_SHORT).show();
                 InputStream inputStream = getResources().openRawResource(id);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 int in;
@@ -1068,7 +978,7 @@ public void onClick(View v) {
         booksArray = loadBooks();
         for (int i = 0; i < 66; i++) {
             if (booksArray[i].equalsIgnoreCase(bookName)) {
-                return booksChapters.getChaptersCount(i + 1);
+                return getChaptersCount(i + 1);
             }
         }
         return 1;
@@ -1085,5 +995,46 @@ public void onClick(View v) {
         }
         return 1;
     }
+
+    public void showChangeLangDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.notes_popup, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText title = (EditText) dialogView.findViewById(R.id.title_notes);
+
+        dialogBuilder.setTitle("Add Notes");
+        dialogBuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    public String checkChaptersCount(String bookSpinner, String chapterSpinner) {
+        String chapterOne = "1";
+        int bookNumber = getBook_number(bookSpinner);
+        int chapterNumber = Integer.parseInt(chapterSpinner);
+        if (1 < chapterNumber) {
+            int totalChapters = getChaptersCount(bookNumber);
+            if (totalChapters >= chapterNumber) {
+                return String.valueOf(chapterNumber);
+            } else if (totalChapters < chapterNumber) {
+                return chapterOne;
+            }
+            return chapterOne;
+        } else {
+            return chapterOne;
+        }
+    }
+
 
 }

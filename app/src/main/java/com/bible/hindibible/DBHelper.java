@@ -9,12 +9,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DBHelper
         extends SQLiteOpenHelper
@@ -27,19 +30,19 @@ public class DBHelper
 
     public DBHelper(Context paramContext)
     {
-        super(paramContext, "dailyversehindi.sqlite", null, 1);
+        super(paramContext, DATABASE_NAME, null, 1);
         ctx = paramContext;
     }
 
     private static String getDatabasePath()
     {
-        return ctx.getApplicationInfo().dataDir + "/databases/" + "dailyversehindi.sqlite";
+        return ctx.getApplicationInfo().dataDir + "/databases/" + DATABASE_NAME;
     }
 
     public void CopyDataBaseFromAsset()
             throws IOException
     {
-        InputStream localInputStream = ctx.getAssets().open("dailyversehindi.sqlite");
+        InputStream localInputStream = ctx.getAssets().open(DATABASE_NAME);
         String str = getDatabasePath();
         File localFile = new File(ctx.getApplicationInfo().dataDir + "/databases/");
         if (!localFile.exists()) {
@@ -63,12 +66,13 @@ public class DBHelper
 
     public ArrayList getVerse(int doy)
     {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try {
-            CopyDataBaseFromAsset();
-        }
-        catch(Exception e )
-        {
-            System.out.println("Error in updateVersesDate");
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
         }
         int day = doy;
         ArrayList<String> dateAndVerse = new ArrayList<String>();
@@ -86,7 +90,14 @@ public class DBHelper
     public boolean updateVersesDate(String doy,String today) {
         // openDataBase();
         try {
-            //CopyDataBaseFromAsset();
+            File localFile = ctx.getDatabasePath(DATABASE_NAME);
+            try {
+                if (!localFile.exists()) {
+                    CopyDataBaseFromAsset();
+                }
+            } catch (Exception e) {
+                System.out.println("Error in saveBookmark");
+            }
             ContentValues contentValues = new ContentValues();
             contentValues.put("date", today);
             getWritableDatabase().update("verses", contentValues, "ID = ?", new String[]{doy});
@@ -108,8 +119,7 @@ public class DBHelper
     public SQLiteDatabase openDataBase()
     {
 
-        File localFile = ctx.getDatabasePath("dailyversehindi.sqlite");
-
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try
         {
             if (!localFile.exists()) {CopyDataBaseFromAsset(); }
@@ -125,12 +135,13 @@ public class DBHelper
 
     public String getPraises(String  id)
     {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try {
-            CopyDataBaseFromAsset();
-        }
-        catch(Exception e )
-        {
-            System.out.println("Error in updateVersesDate");
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
         }
         int number2 = Integer.parseInt(id)-99;
         String from = String.valueOf(number2);
@@ -144,12 +155,13 @@ public class DBHelper
 
     public String[] getSongDetails()
     {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try {
-            CopyDataBaseFromAsset();
-        }
-        catch(Exception e )
-        {
-            System.out.println("Error in updateVersesDate");
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
         }
         ArrayList localArrayList = new ArrayList();
         Cursor localCursor = getReadableDatabase().rawQuery("SELECT TITLE FROM ENGLISHSONGS ORDER BY title", null);
@@ -174,12 +186,13 @@ public class DBHelper
     }
     public String[] getPraises()
     {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try {
-            CopyDataBaseFromAsset();
-        }
-        catch(Exception e )
-        {
-            System.out.println("Error in getPraises() - Hindi Praises");
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
         }
         String verse = "Amen";
         ArrayList<String> praiseArrayList = new ArrayList();
@@ -191,13 +204,13 @@ public class DBHelper
     }
     public ArrayList searchSong(String word)
     {
-        System.out.println(" Keyword # "+word);
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
         try {
-            CopyDataBaseFromAsset();
-        }
-        catch(Exception e )
-        {
-            System.out.println("Error in updateVersesDate");
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
         }
         ArrayList localArrayList = new ArrayList();
         Cursor localCursor = getReadableDatabase().rawQuery("SELECT title FROM ENGLISHSONGS where  " +
@@ -206,6 +219,69 @@ public class DBHelper
             localArrayList.add(localCursor.getString(0));
         }
         return localArrayList;
+    }
+
+    public void saveBookmark(String word) {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
+        try {
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
+        }
+        Log.i("myTag", "This is my message word" + word);
+        ArrayList localArrayList = new ArrayList();
+        ContentValues localContentValues = new ContentValues();
+        localContentValues.put("verse", word);
+        localContentValues.put("date", getCurrentDate());
+        try {
+            getWritableDatabase().insertOrThrow("bookmark", null, localContentValues);
+            getWritableDatabase().close();
+        } catch (Exception exception) {
+            Log.i("myTag", "saveBookmark Exception #  " + exception);
+        }
+    }
+
+    public String[] getAllBookmarks() {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
+        try {
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveBookmark");
+        }
+        ArrayList localArrayList = new ArrayList();
+        Cursor localCursor = getReadableDatabase().rawQuery("SELECT VERSE,DATE FROM BOOKMARK order by DATE desc", null);
+        while (localCursor.moveToNext()) {
+            localArrayList.add(localCursor.getString(1) + "# \n" + localCursor.getString(0));
+        }
+        return (String[]) localArrayList.toArray(new String[localArrayList.size()]);
+    }
+
+    public void deleteBookmark(String selectedBookmark) {
+        File localFile = ctx.getDatabasePath(DATABASE_NAME);
+        String whereClause = "verse=?";
+        try {
+            if (!localFile.exists()) {
+                CopyDataBaseFromAsset();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in deleteBookmark");
+        }
+        try {
+            getWritableDatabase().delete("bookmark", whereClause, new String[]{selectedBookmark});
+            getWritableDatabase().close();
+        } catch (Exception exception) {
+            Log.i("myTag", "saveBookmark Exception #  " + exception);
+        }
+    }
+
+    public String getCurrentDate() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM-dd-yyyy HH:mm:ss");
+        return (formatter.format(date));
     }
 }
 

@@ -4,9 +4,13 @@
    <item android:title="पवित्र बाइबिल -Holy Bible">
        <menu>
            <item
-               android:id="@+id/bible"
+               android:id="@+id/settings"
+               android:icon="@drawable/ic_menu_manage"
+               android:title="Settings" />
+           <item
+               android:id="@+id/bookmark"
                android:icon="@drawable/ic_menu_send"
-               android:title="Hindi-English Transliterated Bible Parallel"  />
+               android:title="Bookmarks" />
            <item
                android:id="@+id/praises"
                android:icon="@drawable/ic_menu_send"
