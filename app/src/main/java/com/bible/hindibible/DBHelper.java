@@ -22,7 +22,7 @@ import java.util.Date;
 public class DBHelper
         extends SQLiteOpenHelper
 {
-    private static final String DATABASE_NAME = "dailyversehindi1.sqlite";
+    private static final String DATABASE_NAME = "dailyverseHindiEnglish26May19.sqlite";
     private static final int DATABASE_VERSION = 1;
     private static final String DB_PATH_SUFFIX = "/databases/";
     static Context ctx;
