@@ -1,11 +1,17 @@
 package com.bible.hindibible;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -27,6 +33,15 @@ public class EnglishSongsActivity extends AppCompatActivity {
     private AdView mAdView;
     String defaulthint = "Search here";
     ArrayList songsList = new ArrayList();
+    SharedPreferences sharedpreferences,sharedPreferencesReadMode;
+    public static final String SHARED_PREF_FONT_SIZE = "font_size";
+    public static final float TEXT_FONT_SIZE = 13;
+    public static final String TEXT_FONT_SIZE_VAR = "text_float_size";
+    public static final String SHARED_PREF_NIGHT_DAY_MODE = "Night_Day_Mode";
+    public static final String TEXT_COLOUR_VAR = "Text_Colour_Var";
+    public static final String BACKROUND_COLOUR_VAR = "Background_Colour_Var";
+    public static final int TEXT_COLOUR = Color.parseColor("#000000");
+    public static final int BACKROUND_COLOUR = Color.parseColor("#FFFFFF");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +54,21 @@ public class EnglishSongsActivity extends AppCompatActivity {
             this.dbhelper.openDataBase();
             arrayOfString = dbhelper.getSongDetails();
             localListView = (ListView)findViewById(R.id.listviewallsongs);
-            localArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayOfString);
+            localArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayOfString){
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    /// Get the Item from ListView
+                    View view = super.getView(position, convertView, parent);
+                    TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                    sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                    sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR,TEXT_FONT_SIZE));
+                    tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, BACKROUND_COLOUR));
+                    tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, TEXT_COLOUR));
+                    // Return the view
+                    return view;
+                }
+            };
             localListView.setAdapter(localArrayAdapter);
             localListView.setOnItemClickListener(this.myOnItemClickListener);
         }catch (Exception localException) {
@@ -91,7 +120,21 @@ public class EnglishSongsActivity extends AppCompatActivity {
                     localSearchView.setQueryHint("Please Search with other word");
                     songsList = new ArrayList();
                     songsList.add("Please Search with different word");
-                    ArrayAdapter localArrayAdapter = new ArrayAdapter(EnglishSongsActivity.this, android.R.layout.simple_list_item_1, EnglishSongsActivity.this.songsList);
+                    ArrayAdapter localArrayAdapter = new ArrayAdapter(EnglishSongsActivity.this, android.R.layout.simple_list_item_1, EnglishSongsActivity.this.songsList){
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            /// Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR,TEXT_FONT_SIZE));
+                            tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, BACKROUND_COLOUR));
+                            tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, TEXT_COLOUR));
+                            // Return the view
+                            return view;
+                        }
+                    };
                     ((ListView) EnglishSongsActivity.this.findViewById(R.id.searchresult)).setAdapter(localArrayAdapter);
                 }
                 return true;
@@ -100,7 +143,9 @@ public class EnglishSongsActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String paramAnonymousString) {
                 Object localObject[] = {"No matches Found"};
                 songsList = new ArrayList();
-
+                View view = getCurrentFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 try {
                     //  SongsActivity.this.dbhelper.openDataBase();
                  /*   dbhelper.openDataBase();                   */
@@ -111,7 +156,21 @@ public class EnglishSongsActivity extends AppCompatActivity {
                 ArrayAdapter localArrayAdapter;
                 ListView localListView;
                 //localArrayAdapter = new ArrayAdapter(SongsActivity.this, android.R.layout.simple_list_item_1, SongsActivity.this.listitems);
-                localArrayAdapter = new ArrayAdapter(EnglishSongsActivity.this, android.R.layout.simple_list_item_1, songsList);
+                localArrayAdapter = new ArrayAdapter(EnglishSongsActivity.this, android.R.layout.simple_list_item_1, songsList){
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                        sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR,TEXT_FONT_SIZE));
+                        tv.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, BACKROUND_COLOUR));
+                        tv.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, TEXT_COLOUR));
+                        // Return the view
+                        return view;
+                    }
+                };
                 localListView = (ListView) EnglishSongsActivity.this.findViewById(R.id.searchresult);
                 localListView.setAdapter(localArrayAdapter);
                 localListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

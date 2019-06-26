@@ -7,7 +7,7 @@ android {
         applicationId "com.bible.hindibible"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 38
+        versionCode 39
         versionName "1.0"
     }
     buildTypes {

@@ -1,7 +1,11 @@
 package com.bible.hindibible;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,6 +27,15 @@ public class EnglishPraisesActivity  extends AppCompatActivity implements Adapte
     TextView praises_text;
     String sp1;
     private AdView mAdView;
+    SharedPreferences sharedpreferences,sharedPreferencesReadMode;
+    public static final String SHARED_PREF_FONT_SIZE = "font_size";
+    public static final float TEXT_FONT_SIZE = 13;
+    public static final String TEXT_FONT_SIZE_VAR = "text_float_size";
+    public static final String SHARED_PREF_NIGHT_DAY_MODE = "Night_Day_Mode";
+    public static final String TEXT_COLOUR_VAR = "Text_Colour_Var";
+    public static final String BACKROUND_COLOUR_VAR = "Background_Colour_Var";
+    public static final int TEXT_COLOUR = Color.parseColor("#000000");
+    public static final int BACKROUND_COLOUR = Color.parseColor("#FFFFFF");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +107,11 @@ public class EnglishPraisesActivity  extends AppCompatActivity implements Adapte
 
                 }
                 praises_text.setText(praises);
+                sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+                sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+                praises_text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR,TEXT_FONT_SIZE));
+                praises_text.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, BACKROUND_COLOUR));
+                praises_text.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, TEXT_COLOUR));
                 scroll.fullScroll(ScrollView.FOCUS_UP);
             }
         }

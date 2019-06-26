@@ -1,7 +1,11 @@
 package com.bible.hindibible;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -10,22 +14,36 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 public class LyricsActivity extends AppCompatActivity {
-    TextView lyrivsView;
+    TextView lyricsTextView;
     String title = "Song";
     String lyrics = "Above All";
     private AdView mAdView;
+    SharedPreferences sharedpreferences,sharedPreferencesReadMode;
+    public static final String SHARED_PREF_FONT_SIZE = "font_size";
+    public static final float TEXT_FONT_SIZE = 15;
+    public static final String TEXT_FONT_SIZE_VAR = "text_float_size";
+    public static final String SHARED_PREF_NIGHT_DAY_MODE = "Night_Day_Mode";
+    public static final String TEXT_COLOUR_VAR = "Text_Colour_Var";
+    public static final String BACKROUND_COLOUR_VAR = "Background_Colour_Var";
+    public static final int BLACK_COLOUR = Color.parseColor("#000000");
+    public static final int WHITE_COLOUR = Color.parseColor("#f2f2f2");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lyrics);
-        lyrivsView = ((TextView) findViewById(R.id.lyrics));
+        lyricsTextView = ((TextView) findViewById(R.id.lyrics));
         Bundle localBundle = getIntent().getExtras();
         try {
             title = localBundle.getString("title");
             setTitle(title);
             lyrics = localBundle.getString("lyrics");
-            lyrivsView.setText(lyrics);
+            lyricsTextView.setText(lyrics);
+            sharedpreferences = getSharedPreferences(SHARED_PREF_FONT_SIZE, Context.MODE_PRIVATE);
+            sharedPreferencesReadMode = getSharedPreferences(SHARED_PREF_NIGHT_DAY_MODE, Context.MODE_PRIVATE);
+            lyricsTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sharedpreferences.getFloat(TEXT_FONT_SIZE_VAR,TEXT_FONT_SIZE));
+            lyricsTextView.setBackgroundColor(sharedPreferencesReadMode.getInt(BACKROUND_COLOUR_VAR, WHITE_COLOUR));
+            lyricsTextView.setTextColor(sharedPreferencesReadMode.getInt(TEXT_COLOUR_VAR, BLACK_COLOUR));
         } catch (Exception e) {
 
         }
