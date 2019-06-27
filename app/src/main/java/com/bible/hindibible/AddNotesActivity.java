@@ -43,7 +43,7 @@ public class AddNotesActivity extends AppCompatActivity {
                 if (0 < title.length() && 0 < message.length()) {
                     dbhelper.saveNote(title, message);
                     Toast.makeText(getApplicationContext(), successMessage, Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AddNotesActivity.this, MainActivity.class));
+                    startActivity(new Intent(AddNotesActivity.this, Main2Activity.class));
                 } else {
                     titleEdit.setError(titleError);
                     messageEdit.setError(messageError);

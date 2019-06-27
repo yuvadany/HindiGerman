@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-   <item android:title="पवित्र बाइबिल -Holy Bible">
-       <menu>
-           <item
-               android:id="@+id/settings"
-               android:icon="@drawable/ic_menu_manage"
-               android:title="Settings" />
-           <item
-               android:id="@+id/bookmark"
-               android:icon="@drawable/ic_menu_send"
-               android:title="Bookmarks" />
-           <item
-               android:id="@+id/praises"
-               android:icon="@drawable/ic_menu_send"
-               android:title="1000 Praises English"  />
-           <item
-               android:id="@+id/Hindipraises"
-               android:icon="@drawable/ic_menu_send"
-               android:title="Stuti स्तुति "  />
-           <item
-               android:id="@+id/vod"
-               android:icon="@drawable/ic_menu_send"
-               android:title="Today's Verse "  />
-           <item
-               android:id="@+id/songs"
-               android:icon="@drawable/ic_menu_send"
-               android:title="Worship Songs English 700+"  />
-           <item
-               android:id="@+id/nav_share"
-               android:icon="@drawable/ic_menu_share"
-               android:title="Share" />
-           <item
-               android:id="@+id/more"
-               android:icon="@drawable/ic_menu_send"
-               android:title="More Bible Apps"  />
-           <item
-               android:id="@+id/rate"
-               android:icon="@drawable/ic_menu_send"
-               android:title="Rate this App"  />
-       </menu>
-   </item>
-
+    <item android:title="@string/app_name">
+        <menu>
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Settings" />
+            <item
+                android:id="@+id/notes"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Notes" />
+            <item
+                android:id="@+id/bookmark"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Bookmarks" />
+            <item
+                android:id="@+id/noAds"
+                android:icon="@drawable/ic_menu_send"
+                android:title="App Without Ads"  />
+            <item
+                android:id="@+id/praises"
+                android:icon="@drawable/ic_menu_send"
+                android:title="1000 Praises English"  />
+            <item
+                android:id="@+id/vod"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Today's Verse "  />
+            <item
+                android:id="@+id/songs"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Worship Songs English (700+)"  />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/more"
+                android:icon="@drawable/ic_menu_send"
+                android:title="More Bible Apps"  />
+            <item
+                android:id="@+id/rate"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Rate this App"  />
+        </menu>
+    </item>
 </menu>
