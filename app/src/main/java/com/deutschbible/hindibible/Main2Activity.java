@@ -809,17 +809,6 @@ public class Main2Activity extends AppCompatActivity
             startActivity(new Intent(this, PraisesActivity.class));
         } else if (id == R.id.notes) {
             startActivity(new Intent(this, NotesActivity.class));
-        } else if (id == R.id.vod) {
-            try {
-                Calendar cal = Calendar.getInstance();
-                int doy = cal.get(Calendar.DAY_OF_YEAR);
-                //this.dbhelper.openDataBase();
-                verseDate = dbhelper.getVerse(doy);
-                Toast.makeText(Main2Activity.this, verseDate.get(0), Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-            }
-        } else if (id == R.id.songs) {
-            startActivity(new Intent(this, EnglishSongsActivity.class));
         } else if (id == R.id.more) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(developer_id));
