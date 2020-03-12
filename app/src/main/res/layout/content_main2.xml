@@ -59,6 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/chapters_spinner"
+        android:paddingBottom="50.0dip"
         android:layout_toLeftOf="@+id/secondView"
         android:orientation="vertical">
 
@@ -82,6 +83,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/chapters_spinner"
         android:layout_toRightOf="@+id/secondView"
+        android:paddingBottom="50.0dip"
         android:orientation="horizontal">
 
         <ListView
